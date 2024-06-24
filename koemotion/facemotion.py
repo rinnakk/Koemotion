@@ -59,7 +59,15 @@ def save_video(vpath, video, fps=30):
     writer.release()
 
 
-def combine_video_audio(vpath, apath, opath, remove_vpath=False, remove_apath=False):
+def combine_video_audio(
+    vpath,
+    apath,
+    opath,
+    remove_vpath=False,
+    remove_apath=False,
+    quiet=False,
+    overwrite_output=False,
+):
     """
     Args:
         vpath (str): path to input video.
@@ -67,12 +75,45 @@ def combine_video_audio(vpath, apath, opath, remove_vpath=False, remove_apath=Fa
         opath (str): path to output video.
         remove_vpath (bool): remove input video file if True.
         remove_apath (bool): remove input audio file if True.
+        quiet (bool): suppress output if True.
+        overwrite_output (bool): overwrite output file if True.
     """
     video = ffmpeg.input(vpath)
     audio = ffmpeg.input(apath)
     out = ffmpeg.output(video, audio, opath)
-    out.run()
+    out.run(quiet=quiet, overwrite_output=overwrite_output)
     if remove_vpath:
         os.remove(vpath)
     if remove_apath:
         os.remove(apath)
+
+
+def visualize(kpath, apath, opath, quiet=False, overwrite=False):
+    """
+    Args:
+        kpath (str): path to input json file containing keypoints.
+        apath (str): path to input audio file, combined with video if specified.
+        opath (str): path to output video file, inferred from kpath if not specified.
+        quiet (bool): suppress output if True.
+        overwrite_output (bool): overwrite output file if True.
+    Returns:
+        None
+    """
+    if opath == "":
+        opath = kpath.replace(".json", ".mp4")
+    vpath = opath.replace(".mp4", "_no_audio.mp4")
+
+    keypoints = load_keypoints(kpath)
+    video = create_video(keypoints)
+    save_video(vpath, video)
+    if apath != "":
+        combine_video_audio(
+            vpath,
+            apath,
+            opath,
+            remove_vpath=True,
+            quiet=quiet,
+            overwrite_output=overwrite,
+        )
+    else:
+        os.rename(vpath, opath)

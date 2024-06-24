@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "koemotion"
+version = "0.1.0"
+description = "Utilities for Koemotion"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "ffmpeg-python >= 0.2.0",
+    "numpy >= 1.24.3",
+    "opencv-python >= 4.7.0.72",
+    "pyaudio >= 0.2.14",
+    "requests >= 2.26.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "pytest",
+]
+
+[project.scripts]
+koemotion-request = "koemotion.cli:request"
+koemotion-visualize = "koemotion.cli:visualize"
+
+[project.urls]
+Homepage = "https://github.com/rinnakk/Koemotion"
+
+[tool.setuptools.packages.find]
+where = ["."]
