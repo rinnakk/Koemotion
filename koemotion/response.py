@@ -9,11 +9,14 @@ class KoemotionResponse:
         """
         Args:
             params (dict): Request body.
-            response (requests.Response): Response object.
+            response (httpx.Response): Response object.
         """
         super().__init__()
         self.params = params
         self.response = response
+
+    def __del__(self):
+        self.response.close()
 
 
 class KoemotionJsonResponse(KoemotionResponse):
@@ -21,7 +24,7 @@ class KoemotionJsonResponse(KoemotionResponse):
         """
         Args:
             params (dict): Request body.
-            response (requests.Response): Response object.
+            response (httpx.Response): Response object.
         """
         super().__init__(params, response)
         self.data = response.json()
@@ -70,7 +73,7 @@ class KoemotionStreamingResponse(KoemotionResponse):
         """
         Args:
             params (dict): Request body.
-            response (requests.Response): Response object.
+            response (httpx.Response): Response object.
         """
         super().__init__(params, response)
         self.audio_data = None

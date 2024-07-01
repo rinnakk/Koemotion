@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-import requests
+import httpx
 
 from .response import KoemotionJsonResponse, KoemotionStreamingResponse
 
@@ -26,6 +26,11 @@ class Koemotion:
             base_url = "https://api.rinna.co.jp/koemotion/infer"
         self.base_url = base_url
 
+        self.client = httpx.Client()
+
+    def __del__(self):
+        self.client.close()
+
     def request(self, params: dict, headers: dict = None):
         """
         Args:
@@ -44,13 +49,16 @@ class Koemotion:
         stream = params.get("streaming", False)
 
         try:
-            response = requests.post(
-                self.base_url, headers=headers_, json=params, stream=stream
+            req = self.client.build_request(
+                "POST", self.base_url, headers=headers_, json=params
             )
+            response = self.client.send(req, stream=stream)
             response.raise_for_status()
         except Exception as e:
             if "response" in locals():
+                response.read()
                 print("Error: ", response.text)
+                response.close()
             raise e
 
         if params.get("streaming", False):

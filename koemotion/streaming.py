@@ -57,7 +57,7 @@ def stream_audio(response, chunk_size=1024):
     Play the audio stream from the response object.
 
     Args:
-        response (requests.Response): Response object from Koemotion API.
+        response (httpx.Response): Response object from Koemotion API.
         chunk_size (int): Size of the audio chunk to stream.
     """
     if is_wsl():
@@ -79,7 +79,7 @@ def stream_audio(response, chunk_size=1024):
 
     data = b""
     prev = b""
-    for i, chunk in enumerate(response.iter_content(chunk_size=chunk_size)):
+    for i, chunk in enumerate(response.iter_bytes(chunk_size=chunk_size)):
         if chunk:
             data += chunk
 
