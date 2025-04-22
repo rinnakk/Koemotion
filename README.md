@@ -15,6 +15,13 @@
 本リポジトリは、Koemotionを利用される方に向けたPythonライブラリと、関連する情報等を提供します。
 
 ## 準備
+
+> [!TIP]
+> 以下ではPythonライブラリのインストール方法、使い方、利用例等を説明しています。
+> もしもKoemotionから得られる音声をWebブラウザで再生したいとお考えの場合、Pythonライブラリは不要です。
+> 代わりに [`examples_javascript/`](./examples_javascript/) 以下にあるJavaScriptサンプルコードをご確認ください。
+
+
 本リポジトリに含まれるコードは、以下の環境で動作を確認しています。
 - Python 3.8.13
 - Windows 11 / macOS Sonoma 14.3.1 / Ubuntu 22.04 (on WSL2)
@@ -78,6 +85,7 @@ response.save_audio("result.mp3")
 
 ### ストリーミング音声合成
 Koemotion Standard/Businessプランに登録している場合、ストリーミング音声合成が利用できます。パラメータに`"output_format": "wav"`と`"streaming": True`を指定し、同様に`request()`メソッドをコールします。
+`"trim_leading_silence": True`の指定は任意ですが、冒頭の無音区間を短縮することができるため、より高速な音声応答が必要なケース等で有効です。
 ```Python
 params = {
   "text": "今日はいい天気ですね",
@@ -85,6 +93,7 @@ params = {
   "speaker_y": 3.0,
   "output_format": "wav",
   "streaming": True,
+  "trim_leading_silence": True,
 }
 response = client.request(params)
 ```
@@ -111,7 +120,7 @@ koemotion-request -d "{\"text\": \"こんにちは\"}" -a result.mp3
 ```
 ストリーミング音声合成を利用する場合（Koemotion Standard/Businessプランへの登録が必要です）は、jsonファイルは保存されず、代わりにデフォルトで`result_streaming.wav`に音声が保存されます。`--autoplay`を指定することで、音声全体のダウンロードを待たずにローカルの音声デバイスで再生を始めることができます。
 ```sh
-koemotion-request -d "{\"text\": \"こんにちは\", \"output_format\": \"wav\", \"streaming\": true}" --autoplay
+koemotion-request -d "{\"text\": \"こんにちは\", \"output_format\": \"wav\", \"streaming\": true, \"trim_leading_silence\": true}" --autoplay
 ```
 
 
@@ -119,5 +128,4 @@ koemotion-request -d "{\"text\": \"こんにちは\", \"output_format\": \"wav\"
 - [`examples/facemotion`](./examples/facemotion): Koemotionから返ってきた音声および顔のキーポイントを動画化する
 - [`examples/streaming/streaming_demo.py`](./examples/streaming/streaming_demo.py): ストリーミング音声合成をPythonから実行する
 - [`examples/streaming/realtime_chat_demo.py`](./examples/streaming/realtime_chat_demo.py): GPT-4o APIとKoemotionを利用して、リアルタイムな音声応答を得る（OpenAIのAPIキーの登録、および`openai`ライブラリのインストールが必要です）
-
-
+- [`examples_javascript/streaming`](./examples_javascript/streaming): Koemotionからストリーミングされた音声をWebブラウザーで再生する (Python環境は不要です)

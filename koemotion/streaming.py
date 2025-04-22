@@ -29,7 +29,7 @@ def parse_wav_header(header):
     return n_channels, sample_width, sample_rate
 
 
-def save_audio(audio_data, output_path):
+def save_audio(audio_data, output_path, output_format="wav"):
     """
     Save the audio stream from the response object to a WAV file.
     Note that this function waits for the entire audio stream to be downloaded before saving.
@@ -37,27 +37,35 @@ def save_audio(audio_data, output_path):
     Args:
         audio_data (bytes): Binary audio data.
         output_path (str): Path to save the audio file.
+        output_format (str): Audio format, one of ["wav", "raw"].
     """
     directory = os.path.dirname(output_path)
     if directory:
         os.makedirs(directory, exist_ok=True)
 
-    header, audio = audio_data[:44], audio_data[44:]
-    n_channels, sample_width, sample_rate = parse_wav_header(header)
+    if output_format == "wav":
+        header, audio = audio_data[:44], audio_data[44:]
+        n_channels, sample_width, sample_rate = parse_wav_header(header)
 
-    with wave.open(output_path, "wb") as wf:
-        wf.setnchannels(n_channels)
-        wf.setsampwidth(sample_width)
-        wf.setframerate(sample_rate)
-        wf.writeframes(audio)
+        with wave.open(output_path, "wb") as wf:
+            wf.setnchannels(n_channels)
+            wf.setsampwidth(sample_width)
+            wf.setframerate(sample_rate)
+            wf.writeframes(audio)
+    elif output_format == "raw":
+        with open(output_path, "wb") as f:
+            f.write(audio_data)
+    else:
+        raise ValueError(f"Invalid output format: {output_format}")
 
 
-def stream_audio(response, chunk_size=1024):
+def stream_audio(response, output_format="wav", chunk_size=1024):
     """
     Play the audio stream from the response object.
 
     Args:
         response (httpx.Response): Response object from Koemotion API.
+        output_format (str): Audio format, one of ["wav", "raw"].
         chunk_size (int): Size of the audio chunk to stream.
     """
     if is_wsl():
@@ -85,8 +93,13 @@ def stream_audio(response, chunk_size=1024):
 
             # skip WAV header
             if i == 0:
-                header, chunk = chunk[:44], chunk[44:]
-                n_channels, _, sample_rate = parse_wav_header(header)
+                if output_format == "wav":
+                    header, chunk = chunk[:44], chunk[44:]
+                    n_channels, _, sample_rate = parse_wav_header(header)
+                elif output_format == "raw":
+                    n_channels, sample_rate = 1, 24000
+                else:
+                    raise ValueError(f"Invalid output format: {output_format}")
                 p = pyaudio.PyAudio()
                 stream = p.open(
                     format=pyaudio.paInt16,

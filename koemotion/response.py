@@ -87,8 +87,9 @@ class KoemotionStreamingResponse(KoemotionResponse):
             output_path (str): Path to save the audio file.
             quiet (bool): Suppress log if True.
         """
+        ext = self.params["output_format"]
         if not output_path:
-            output_path = "result_streaming.wav"
+            output_path = f"result_streaming.{ext}"
 
         if self.audio_data:
             save_audio(self.audio_data, output_path)
@@ -105,4 +106,8 @@ class KoemotionStreamingResponse(KoemotionResponse):
         Args:
             chunk_size (int): Size of the audio chunk to stream.
         """
-        self.audio_data = stream_audio(self.response, chunk_size)
+        self.audio_data = stream_audio(
+            self.response,
+            self.params["output_format"],
+            chunk_size,
+        )
