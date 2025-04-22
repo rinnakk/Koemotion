@@ -85,7 +85,6 @@ response.save_audio("result.mp3")
 
 ### ストリーミング音声合成
 Koemotion Standard/Businessプランに登録している場合、ストリーミング音声合成が利用できます。パラメータに`"output_format": "wav"`と`"streaming": True`を指定し、同様に`request()`メソッドをコールします。
-`"trim_leading_silence": True`の指定は任意ですが、冒頭の無音区間を短縮することができるため、より高速な音声応答が必要なケース等で有効です。
 ```Python
 params = {
   "text": "今日はいい天気ですね",
@@ -93,7 +92,6 @@ params = {
   "speaker_y": 3.0,
   "output_format": "wav",
   "streaming": True,
-  "trim_leading_silence": True,
 }
 response = client.request(params)
 ```
@@ -120,7 +118,7 @@ koemotion-request -d "{\"text\": \"こんにちは\"}" -a result.mp3
 ```
 ストリーミング音声合成を利用する場合（Koemotion Standard/Businessプランへの登録が必要です）は、jsonファイルは保存されず、代わりにデフォルトで`result_streaming.wav`に音声が保存されます。`--autoplay`を指定することで、音声全体のダウンロードを待たずにローカルの音声デバイスで再生を始めることができます。
 ```sh
-koemotion-request -d "{\"text\": \"こんにちは\", \"output_format\": \"wav\", \"streaming\": true, \"trim_leading_silence\": true}" --autoplay
+koemotion-request -d "{\"text\": \"こんにちは\", \"output_format\": \"wav\", \"streaming\": true}" --autoplay
 ```
 
 

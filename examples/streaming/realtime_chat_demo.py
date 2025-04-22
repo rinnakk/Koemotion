@@ -1,7 +1,8 @@
 from time import perf_counter
 
-from koemotion import Koemotion
 from openai import OpenAI
+
+from koemotion import Koemotion
 
 openai_client = OpenAI()
 koemotion_client = Koemotion()
@@ -17,7 +18,6 @@ koemotion_params = {
     "speaker_y": 3.0,
     "output_format": "wav",
     "streaming": True,
-    "trim_leading_silence": True,
 }
 
 while True:

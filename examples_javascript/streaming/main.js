@@ -41,7 +41,6 @@ app.post("/api/tts-stream", async (req, res) => {
       speaker_y: 0.0,
       output_format: "wav",
       streaming: true,
-      trim_leading_silence: true,
     }),
   });
 
